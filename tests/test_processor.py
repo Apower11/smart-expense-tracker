@@ -56,7 +56,7 @@ def test_ingestion_integrity(filename):
     
     # Validation assertions
     assert isinstance(result_df, pd.DataFrame)
-    assert result_df.empty
+    assert not result_df.empty
     assert result_df.shape[1] == 3
     
     # Standardized header check
