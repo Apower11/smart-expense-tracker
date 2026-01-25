@@ -1,0 +1,11 @@
+Date,Description,Amount
+2026-01-01,Date Test 1,25.0
+02/01/2026,Date Test 2,25.0
+"Mar 3, 2026",Date Test 3,25.0
+2026.04.04,Date Test 4,25.0
+05-05-26,Date Test 5,25.0
+2026/06/06,Date Test 6,25.0
+07-Jul-2026,Date Test 7,25.0
+2026-08-08T10:00:00,Date Test 8,25.0
+09/09/26,Date Test 9,25.0
+2026-10-10,Date Test 10,25.0

@@ -1,0 +1,11 @@
+Date,Description,Amount
+2026-01-01,Payment,10.0
+2026-01-02,Payment,PENDING
+2026-01-03,Payment,VOID
+2026-01-04,Payment,--
+2026-01-05,Payment,$10.00
+2026-01-06,Payment,ERROR
+2026-01-07,Payment,nan
+2026-01-08,Payment,N/A
+2026-01-09,Payment,???
+2026-01-10,Payment,12.50
