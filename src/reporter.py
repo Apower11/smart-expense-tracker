@@ -23,9 +23,6 @@ def summarize_by_month(df):
         columns='category',
         values='amount',
         aggfunc='sum'
-    )
-
-    # 3. Clean up the output
-    summary = summary.fillna(0.0)
+    ).fillna(0.0)
 
     return summary
