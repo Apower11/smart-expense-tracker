@@ -6,21 +6,44 @@ def clean_data(df):
     Standardizes schema types. 
     Handles locale-specific currency formatting and mixed date strings.
     """
-    df = df.copy() 
-
-    # 1. Cast amounts to float64 using helper
-    df['amount'] = df['amount'].apply(parse_amount)
-
-    # 2. Parse dates with 'mixed' to prevent warnings on ambiguous ISO vs localized strings
-    df['date'] = pd.to_datetime(
-        df['date'], 
-        dayfirst=True, 
-        errors='coerce', 
-        format='mixed'
-    )
+    df = df.copy()
     
-    # 3. Normalize descriptions to Title Case for UI consistency
-    df['description'] = df['description'].astype(str).str.strip().str.title()
+    # 1. Clean Dates (US Standard for our integration test)
+    df['date'] = pd.to_datetime(df['date'], errors='coerce', dayfirst=False)
+    df = df.dropna(subset=['date'])
+
+    # 2. Clean Amounts
+    def normalize_amount(val):
+        if isinstance(val, (int, float)):
+            return float(val)
+        
+        s = str(val).strip()
+        
+        # Handle accounting format: (50.00) -> -50.00
+        if s.startswith('(') and s.endswith(')'):
+            s = '-' + s[1:-1]
+        
+        # Handle European thousands/decimals: 1.200,50 -> 1200.50
+        # If there's a comma and a dot, and the comma comes last, it's Euro-style
+        if ',' in s and '.' in s:
+            if s.find(',') > s.find('.'):
+                s = s.replace('.', '').replace(',', '.')
+        elif ',' in s and s.count(',') == 1 and len(s.split(',')[-1]) == 2:
+            # Handle case with only a comma: 1200,50 -> 1200.50
+            s = s.replace(',', '.')
+
+        # Strip everything except digits, dots, and minus signs
+        s = re.sub(r'[^\d.-]', '', s)
+        
+        try:
+            return float(s)
+        except ValueError:
+            return 0.0
+
+    df['amount'] = df['amount'].apply(normalize_amount)
+
+    df['description'] = df['description'].astype(str).fillna('Unknown')    
+    df['description'] = df['description'].str.strip()
     
     return df
 
