@@ -1,4 +1,5 @@
 {
+  "Income": ["Payroll", "Deposit", "Venmo", "Interest"],
   "Dining": ["Starbucks", "McDonalds", "Chipotle", "Restaurant"],
   "Entertainment": ["Netflix", "Spotify", "Steam", "Disney+"],
   "Transport": ["Shell", "Chevron", "Uber", "Lyft", "Gas Station"],

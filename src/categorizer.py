@@ -1,43 +1,35 @@
+import pandas as pd
 import json
 import os
-import pandas as pd
 
 def load_categories(config_path='config/categories.json'):
-    """
-    Reads the keyword mapping from the JSON config file.
-    Returns an empty dict if the file is missing or malformed.
-    """
     if not os.path.exists(config_path):
-        # Using a simple print for now; consider logging module for production
-        print(f"(!) Warning: {config_path} not found. Defaulting to 'Other'.")
         return {}
-        
-    try:
-        with open(config_path, 'r') as f:
-            return json.load(f)
-    except json.JSONDecodeError:
-        print(f"(!) Error: {config_path} is not valid JSON.")
-        return {}
+    with open(config_path, 'r') as f:
+        return json.load(f)
 
-def apply_categories(df, config_path='config/categories.json'):
+def apply_categories(df):
     """
-    Orchestrates the categorization process.
-    Matches keywords against descriptions and returns the labeled DataFrame.
+    Categorizes transactions based on keywords and ensures 
+    correct mathematical signs for Net Spend logic.
     """
     df = df.copy()
-    df['category'] = 'Other' 
+    categories = load_categories()
     
-    mapping = load_categories(config_path)
+    df['category'] = 'Other'
     
-    for category, keywords in mapping.items():
-        if not keywords:
-            continue
-            
-        # Create a regex 'OR' pattern: (keyword1|keyword2|keyword3)
-        pattern = '|'.join(map(str, keywords))
-        
-        # Case-insensitive substring match
-        mask = df['description'].str.contains(pattern, case=False, na=False)
-        df.loc[mask, 'category'] = category
-        
+    for category, keywords in categories.items():
+        for keyword in keywords:
+            mask = df['description'].str.contains(keyword, case=False, na=False)
+            df.loc[mask, 'category'] = category
+
+    income_categories = ['Income', 'Salary', 'Refund', 'Deposit']
+
+    # 1. Ensure all amounts are treated as absolute values first to reset
+    df['amount'] = df['amount'].abs()
+
+    # 2. If category is NOT in income_categories, make it negative (Expense)
+    is_expense = ~df['category'].isin(income_categories)
+    df.loc[is_expense, 'amount'] = df.loc[is_expense, 'amount'] * -1
+    
     return df
