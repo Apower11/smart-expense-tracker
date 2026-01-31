@@ -6,6 +6,7 @@ from src.deduplicator import remove_duplicates
 from src.categorizer import apply_categories
 from src.reporter import summarize_by_month
 from src.processor import load_data
+from src.exporter import export_to_excel
 
 def run_pipeline(file_path):
     """
@@ -40,15 +41,14 @@ def main():
     args = parser.parse_args()
 
     try:
-        final_report = run_pipeline(args.file)
-        
-        print("\n MONTHLY SPENDING SUMMARY")
-        print("=" * 30)
-        print(final_report)
-        print("=" * 30)
+        raw_df = load_data(args.file)
+        cleaned_df = clean_data(raw_df)
+        categorized_df = apply_categories(cleaned_df)
+        summary_df = summarize_by_month(categorized_df)
+        export_to_excel(summary_df, categorized_df)
         
     except Exception as e:
-        print(f"Pipeline Failed: {e}")
+        print(f"Error: {e}")
 
 if __name__ == "__main__":
     main()

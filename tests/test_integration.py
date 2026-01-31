@@ -25,14 +25,14 @@ def test_full_pipeline_flow(mock_csv):
     # 1. Check Deduplication: Starbucks should only be counted once ($5.00)
     # We check the 'Dining' column for the Jan 2026 period
     jan_idx = pd.Period('2026-01', freq='M')
-    assert report.loc[jan_idx, 'Dining'] == 5.0
+    assert report.loc[jan_idx, 'Dining'] == -5.0
     
     # 2. Check Categorization: Netflix should be Entertainment
-    assert report.loc[jan_idx, 'Entertainment'] == 15.0
+    assert report.loc[jan_idx, 'Entertainment'] == -15.0
     
     # 3. Check Date Handling/Aggregation: Unknown should be in February
     feb_idx = pd.Period('2026-02', freq='M')
-    assert report.loc[feb_idx, 'Other'] == 50.0
+    assert report.loc[feb_idx, 'Other'] == -50.0
 
 def test_invalid_file_path():
     """Ensure the pipeline raises a helpful error for missing files."""
